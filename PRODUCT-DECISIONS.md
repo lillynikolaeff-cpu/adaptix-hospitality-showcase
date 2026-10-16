@@ -1,49 +1,75 @@
 # Product decisions
 
-[Product overview](README.md) · [Architecture and integrations](ARCHITECTURE.md)
+[Product overview](README.md) · [Architecture](ARCHITECTURE.md)
 
-These decisions define the completed first release: a free cost calculator and a €5 local market comparison for independent hosts in Slovenia.
+These decisions describe the service at the end of Sprint 2, **16 October 2026**: a free cost calculator, limited free launch reports, bilingual educational content and consent-aware measurement.
 
 ## Start with the host's own economics
 
-A market average cannot tell a host whether a short stay covers cleaning, laundry and commission. The free calculator therefore establishes two complete nightly rates first: one covers the entered costs, the other includes the requested profit before income tax. Booking totals, payout and profit are named separately.
+A market average cannot tell a host whether a short stay covers cleaning, laundry and commission. The calculator therefore establishes two nightly rates: one covers entered costs, the other includes the requested profit before income tax. Booking totals, payout and profit are named separately.
 
-A separate cleaning fee is revenue from the guest. It changes the displayed nightly price while actual cleaning remains an expense. Making both visible lets hosts compare shorter and longer stays without hiding costs.
+A separate cleaning fee is guest revenue while cleaning remains an expense. Keeping both visible supports comparison of short and long stays without hiding costs. Numerical results use deterministic formulas.
 
-## Make the paid result answer a specific question
+## Let a visitor request a report directly
 
-The €5 purchase adds a local reference to the host's calculation: the market price distribution, registered accommodation supply and tourism history for the selected area. One purchase has one municipality, property category and bedroom selection, with a dated snapshot and defined access period.
+Some hosts want local market context before completing a cost calculation. The direct report path asks for geography and property parameters, then confirms the email address. It does not invent financial inputs or force the visitor through the calculator.
 
-The compact page can be revisited and printed. Recalculating personal costs is free because it does not require fresh supplier data. A new market slice is a separate explicit purchase. This keeps the service understandable for occasional users and ties data spending to a paid request.
+The calculator-to-report path remains available and carries the host's actual inputs and selection forward. Both paths lead to the same saved report model.
 
-## Give each data source a distinct job
+## Bound the launch offer
 
-AJPES describes registered establishments, SURS provides municipal guest-night context, and AirROI provides commercial market estimates. They contribute separate blocks to a single decision; they do not measure the same population. A register entry is not a listing, a registered bed is not a bedroom, and a guest overnight stay is not a booked property-night.
+The current offer is capped at 50 report grants, with one grant per verified email and municipality. Atomic reservation protects the cap under simultaneous requests. Failed and uncertain requests keep their reservation until reviewed.
 
-The design imports official data into versioned aggregates and requests the commercial market slice after payment. Source dates and definitions travel with the result. Missing observations remain visible instead of turning into zeroes or invented estimates.
+A repeat opening uses the stored snapshot rather than spending on another commercial API request. Changing the original selection must not silently change a previously granted report.
 
-## Treat geography as part of what the customer buys
+The former €5 purchase path is retained behind explicit configuration, with paid sales disabled. Enabling payments is a separate product decision; the public documentation must describe the offer a visitor can actually use.
 
-The host selects an official municipality. A reviewed crosswalk connects that choice to SURS and the exact AirROI market identifiers. A successful API response is only one check; the boundary must also match.
+## Give each source a distinct job
 
-The service sells comparisons only for verified selections. It does not substitute a nearby town or a broader region without the customer's knowledge. The order pins the mapping version so a later correction cannot silently change what was purchased. Free coverage across all 212 municipalities can coexist with a smaller set of eligible paid markets.
+AJPES describes registered establishments, SURS supplies municipal tourism observations, and AirROI supplies commercial historical market estimates. They support the same decision but describe different populations and units.
 
-## Preserve the result independently of email
+Source dates, retrieval dates and definitions travel with the report. Missing or suppressed values remain visible. A daily source check cannot make the latest published monthly tourism data more recent.
 
-Payment success, report readiness and message delivery are separate states. The customer can open a ready result even when its email fails. Resending the link reuses the saved result and does not consume another paid data call.
+## Make geography explicit
 
-Duplicate payment notifications are expected and deduplicated. An uncertain supplier-call outcome needs reconciliation before a retry. The owner sees paid orders without results and can resolve them or issue a refund.
+The visitor chooses an official municipality and a compatible commercial market. The resolver rejects unrelated or unconfirmed combinations. A supported locality relationship does not establish identical administrative boundaries; that uncertainty is stated in the report.
 
-## Keep contact confirmation separate from marketing
+Free official-data coverage across 212 municipalities does not imply equivalent commercial coverage. The system retains exact provider identifiers and the version of the geographic rule used.
 
-Anyone can calculate without signing in. Email confirmation is required to receive a saved calculation and proceed to payment, while marketing consent remains optional. Confirmation proves control of an address; it does not create a subscription by itself. Consent and withdrawal are stored as versioned events, and current application state governs any later outreach.
+## Preserve the report independently of email
 
-## Use a small, operable architecture
+Entitlement, report readiness and email delivery are separate states. The customer can open a ready report when its email fails. Sending the same result link again does not refetch the market data.
 
-One Cloudflare application and D1 database support the interface, customer workflow, source aggregates and owner operations. Isolated adapters handle each data contract. Scheduled imports stay outside customer requests, and durable order jobs keep fulfilment independent of browser sessions.
+Atomic claims prevent normal duplicate processing. An uncertain supplier-call or mail outcome requires review instead of a blind retry. This is a controlled recovery strategy, not a promise of exactly-once behaviour across external services.
 
-The owner uses a protected administration area and can export CSV to a private Google Sheet. Manual refund handling and CSV import are sufficient for the first release. Automatic spreadsheet synchronization, dynamic rate publishing, calendar integration and expanded analytics remain later product choices.
+## Separate confirmation and consent
 
-## Make the showcase assessable
+Email confirmation establishes control of an address and resumes the requested result. Marketing consent is optional and has its own recorded state and withdrawal path.
 
-The architecture describes the intended finished service. A separate dated checkpoint identifies delivery progress. Public screenshots illustrate the implemented interface; neither they nor this design establish customer adoption, revenue or conversion performance. Those require evidence from actual use after release.
+Analytics consent and advertising measurement consent are separate from transactional delivery. A visitor may receive the report without joining a marketing list. Private links, emails and personal cost inputs do not belong in public campaign URLs or creative assets.
+
+## Measure materials through to a ready report
+
+A bounded registry of twelve campaign links distinguishes organic Facebook/LinkedIn posts and Google/Meta ad variants. Separate campaign values are the simplest working attribution mechanism for this release; unsupported free-text URL values are sanitized.
+
+Article assistance remains separate from the acquisition source. Duplicate confirmation and report reopening do not count as additional ready reports.
+
+Owner/friend tests are separated when interpreting demand. Search indexing, working instrumentation and a technical advertising handoff were the Sprint 2 goals; traffic growth and paid-campaign results require subsequent real use.
+
+## Publish bilingual content through one catalogue
+
+The marketer supplies EN/SL text, sources, metadata, an image and localized alternative text. The developer registers the translated pair, places the image, adds internal links and calls to action, and validates both pages.
+
+The catalogue generates the sitemap and language relationships, reducing the chance of a published article being omitted. Search Console is checked after publication; deployment itself does not prove indexing.
+
+## Keep operations independently observable
+
+A daily cloud task refreshes and publishes official data. A separate hourly task checks freshness, failed or stuck report/mail states, quota evidence and resource limits.
+
+Incident and recovery notices use Gmail, independently of the transactional EmailJS channel. Unchanged checks stay quiet. An enabled schedule or silent inbox is not proof of a successful run; dated execution and delivery evidence are retained privately.
+
+## Keep the public showcase accurate
+
+This repository describes the deployed service and separates disabled paths, verified behaviour and pending commercial decisions. Archived screenshots are dated rather than presented as the current interface.
+
+Application source, customer data, credentials and private operational evidence remain outside the public showcase. Documentation changes do not grant a new software licence or claim customer adoption.

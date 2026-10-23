@@ -2,13 +2,21 @@
 
 [Product overview](README.md) · [Architecture](ARCHITECTURE.md)
 
-These decisions describe the service at the end of Sprint 2, **16 October 2026**: a free cost calculator, limited free launch reports, bilingual educational content and consent-aware measurement.
+These decisions describe the service at the end of Sprint 3, **23 October 2026**: a free cost calculator, limited free launch reports, bilingual educational content and consent-aware measurement.
 
 ## Start with the host's own economics
 
 A market average cannot tell a host whether a short stay covers cleaning, laundry and commission. The calculator therefore establishes two nightly rates: one covers entered costs, the other includes the requested profit before income tax. Booking totals, payout and profit are named separately.
 
 A separate cleaning fee is guest revenue while cleaning remains an expense. Keeping both visible supports comparison of short and long stays without hiding costs. Numerical results use deterministic formulas.
+
+The public wording is “Your starting rates”: the output precedes promotions, discounts and date-specific decisions. Fresh visits start a new calculation; email links retain access to their own stored result.
+
+## Keep small samples useful
+
+A sample below ten does not by itself block publication of a review. The same caution used for 10–29 applies, and the sample size remains visible. Missing values are not turned into prices. A single hotel observation is clearly labelled and does not imply a range.
+
+Hotel ADR history and the weekly published-offer radar answer different questions. They stay in separate blocks with their own dates, source links and conditions. A hotel room for two is not automatically a standard room or an equivalent to an entire apartment. The comparison with a host's own price appears only when a real calculation exists.
 
 ## Let a visitor request a report directly
 
@@ -50,7 +58,7 @@ Analytics consent and advertising measurement consent are separate from transact
 
 ## Measure materials through to a ready report
 
-A bounded registry of twelve campaign links distinguishes organic Facebook/LinkedIn posts and Google/Meta ad variants. Separate campaign values are the simplest working attribution mechanism for this release; unsupported free-text URL values are sanitized.
+A bounded registry of sixteen campaign links distinguishes organic Facebook/LinkedIn posts and Google/Meta ad variants. Separate campaign values are the simplest working attribution mechanism for this release; unsupported free-text URL values are sanitized.
 
 Article assistance remains separate from the acquisition source. Duplicate confirmation and report reopening do not count as additional ready reports.
 
@@ -67,6 +75,14 @@ The catalogue generates the sitemap and language relationships, reducing the cha
 A daily cloud task refreshes and publishes official data. A separate hourly task checks freshness, failed or stuck report/mail states, quota evidence and resource limits.
 
 Incident and recovery notices use Gmail, independently of the transactional EmailJS channel. Unchanged checks stay quiet. An enabled schedule or silent inbox is not proof of a successful run; dated execution and delivery evidence are retained privately.
+
+The operations dashboard records independent execution, incident transitions and delivery verification. The daily 08:00 digest is sent even for zero orders and includes older unresolved incidents. Resource snapshots retain their observation dates; short-history forecasts and research spending are qualified.
+
+Monthly national hotel updates have a $15 limit and a $5 reserve. Stale balance evidence stops the paid stage; it does not erase a usable cache or block the main review. The first scheduled paid cycle on 20 November remains an explicit follow-up.
+
+## Keep share links stable
+
+The first short URLs are fixed aliases to one language and one registered campaign. They are tested from a clean browser and in the actual social preview tools. Clean full URLs remain the canonical, language, sitemap and internal-link identities. An indexing request is recorded separately from confirmed Google indexing.
 
 ## Keep the public showcase accurate
 

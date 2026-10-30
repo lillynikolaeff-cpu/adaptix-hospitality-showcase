@@ -2,7 +2,21 @@
 
 [Product overview](README.md) · [Architecture](ARCHITECTURE.md)
 
-These decisions describe the service at the end of Sprint 3, **23 October 2026**: a free cost calculator, limited free launch reports, bilingual educational content and consent-aware measurement.
+These decisions reflect the **30 October 2026 Sprint 4 checkpoint**: a free calculator, limited launch reports, bilingual content, consent-aware measurement and a connected AI interface. Final editorial review and sprint acceptance remain open.
+
+## Give visitors three explicit starting points
+
+A visitor can request a report, calculate a cost-based nightly rate, or inspect free municipal supply without completing the other paths. The calculator result follows the inputs instead of competing with them in a side panel. This bounded UX change ships in Sprint 4; the broader redesign and full 200% zoom matrix move to the next UX sprint.
+
+## Let AI explain a verified result without changing the host's inputs
+
+The AI client uses the same deterministic calculation and account-scoped saved report as the website. It must preserve the stay length, included cleaning and fees. A separately charged cleaning fee is a new agreed scenario, not an automatic correction. Re-reading the same report does not require another purchase or email.
+
+Every source needs an explicit unit and date. Historical ADR, guest booking totals, person-nights and hotel-room listings are different measures. Clear metadata reduces ambiguity, but external AI wording still needs editorial acceptance. Six successful tool scenarios demonstrate integration, not automatic discovery, demand or perfect explanations.
+
+## Keep internal measurement separate from advertising outcomes
+
+Diagnostic events use their own names and internal-test classification. The processed GA4 report-ready test validates delivery and campaign retention; a test without an ad click and advertising consent cannot establish a real Google Ads conversion. Launch readiness, launch authorization and measured customer demand are separate checkpoints.
 
 ## Start with the host's own economics
 

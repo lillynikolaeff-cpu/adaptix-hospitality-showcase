@@ -8,7 +8,9 @@ Adaptix Hospitality helps a host answer three connected questions: **What nightl
 
 The live service combines a free cost calculator with a limited launch offer of **50 free market reports**, subject to availability and supported geography. A report can be requested directly or after using the calculator. Email confirmation is required; a marketing subscription is optional.
 
-This showcase describes the implementation at **23 October 2026, after Sprint 3 (version 67)**. The earlier €5 purchase design is retained in the application as a separately gated payment path; paid sales are currently disabled. It is not the current public report journey.
+**Sprint 4 checkpoint, 30 October 2026 (production version 91).** The AI integration and technical checks below are verified; final editorial review and sprint acceptance remain open. The earlier €5 purchase design remains separately gated, with paid sales disabled.
+
+The homepage now offers three explicit entry points: request a market report, calculate a starting nightly rate, or view free registered-supply information for a municipality. English and Slovenian navigation consistently includes About us.
 
 ## Who it serves
 
@@ -20,9 +22,9 @@ An independent host renting a room, apartment or holiday home, often as a source
 
 Enter the length of the stay, cleaning and laundry costs per booking, nightly running costs, monthly fixed costs, expected occupied nights and a target profit. Editable commissions support direct bookings, Airbnb and Booking.com.
 
-The result is a starting point before promotions, discounts and date-specific adjustments. A new visit starts with clean inputs; a saved confirmation link still opens its own result. On desktop, the result stays visible alongside the form; on mobile, it follows the form. The result shows two alternative prices: **Break-even rate** and **Rate with profit**. Each includes a booking total, channel fees, payout and profit before income tax. A separate cleaning charge can be added without removing the cleaning expense from the calculation.
+The result is a starting point before promotions, discounts and date-specific adjustments. A new visit starts with clean inputs; a saved confirmation link still opens its own result. The result follows the form on all screen sizes and has no independently scrolling panel. Minimum stay and nights in this calculation are separate inputs. The result shows a rate covering entered costs and a rate with the requested income, plus booking totals and income after channel fees. A separate cleaning charge is an optional user-selected scenario; cleaning remains an expense. Taxes already included in entered costs or fees stay included and should not be added twice.
 
-The calculator also shows a dated AJPES registered-supply indicator for the selected municipality. Official-data coverage includes all 212 Slovenian municipalities; commercial market coverage is checked separately.
+The free municipality section shows dated AJPES registered-supply information without requiring a calculation or email. Official-data coverage includes all 212 Slovenian municipalities; commercial market coverage is checked separately.
 
 ### Request a market report
 
@@ -39,6 +41,14 @@ One launch grant is tied to a verified email and municipality. Reopening an exis
 
 The ready result opens on the site and is linked in a transactional email. Report readiness and email delivery are tracked separately.
 
+## Connected AI use
+
+An authenticated Claude connection can run the same deterministic price calculation and read the account's accessible saved reports. Six separate English/Slovenian scenarios were exercised: calculation, report reading, and a combined explanation in each language. Server traces identify the action, language and immutable report snapshot.
+
+Reading an existing report reuses its snapshot and does not create another order, email or paid data request. A new report request needs a separate confirmation on the product website; new AI report requests are currently paused. The connection uses a one-hour access token and may require reconnection after expiry.
+
+AI explanations keep the host's original costs and cleaning arrangement. Source dates, units, small samples and geographical limits travel with the tool response. Historical ADR is context rather than a current guest quote or a seasonal pricing recommendation. Final editorial review remains open; successful tool execution is not proof of flawless generated wording or independent AI discovery.
+
 ## Sources and meaning
 
 - **AJPES RNO:** registered accommodation establishments and their declared capacity. The importer groups establishments by their actual municipality. [Official source](https://www.ajpes.si/Registri/Drugi_registri/Register_nastanitvenih_obratov/Splosno)
@@ -49,7 +59,7 @@ These sources describe different populations. Registered establishments, platfor
 
 ## Search, content and measurement
 
-The blog has three translated article pairs. The newest, published on 23 October, explains which accommodation alternatives to compare:
+The bilingual blog includes guidance on choosing accommodation alternatives to compare:
 
 - [Setting your nightly rate: which properties should you compare?](https://adaptix-hs.eu/blog/which-properties-to-compare)
 - [Določanje cene na noč: katere nastanitve primerjati?](https://adaptix-hs.eu/blog/katere-nastanitve-primerjati)
@@ -59,7 +69,7 @@ The introductory article remains available:
 - [How to set your nightly rate](https://adaptix-hs.eu/blog/how-to-set-your-nightly-rate)
 - [Kako določiti ceno na noč](https://adaptix-hs.eu/blog/kako-dolociti-ceno-na-noc)
 
-Google indexing was requested for both new article URLs on 23 October; they were not indexed at the inspection checkpoint. Earlier indexing evidence remains historical and does not establish current search traffic.
+The latest real-life example, [Connect your costs with the local market: a real-life example in Podčetrtek](https://adaptix-hs.eu/blog/podcetrtek-costs-local-market), is also [available in Slovenian](https://adaptix-hs.eu/sl/clanki/podcetrtek-stroski-lokalni-trg). Publication and indexing evidence do not by themselves establish search traffic or customer acquisition.
 
 Canonical and language links, a generated sitemap, article structured data and localized Open Graph cards support discovery and sharing. The report pages have public share images.
 
@@ -67,18 +77,21 @@ Consent-aware analytics follow the path to a ready report. Sixteen registered ma
 
 Fixed first-party short links now support LinkedIn to EN and Facebook to SL. They redirect to the full article with registered campaign labels; canonical, language, sitemap and internal CTA links stay clean. Both new short links were checked in LinkedIn Post Inspector and Facebook Sharing Debugger.
 
-Google Ads conversion import and Meta server-side measurement have been technically checked. This does not claim a live campaign, advertising performance or customer acquisition.
+The 30 October internal web test reached a ready report and appeared once in processed GA4 with its campaign label. Reopening did not create another order or report-ready event. Production report_ready is imported into Google Ads as a secondary conversion, while diagnostic events remain separate. This test had no advertising click or advertising consent and does not prove real advertising attribution. No Sprint 4 campaign has been launched.
 
 ## Implementation and reliability checkpoint
 
-| Area | Evidence at the end of Sprint 3 |
+| Area | Evidence at the 30 October Sprint 4 checkpoint |
 | --- | --- |
-| Report journeys | EN/SL confirmation, consent decline, clean new visits, stored-result reopening and protected report access checked |
-| Small samples | Samples below 10 retain the same caution as 10–29; missing price data is explicit and does not block the rest of the report |
-| Hotels and radar | Monthly AirROI cache and weekly published-offer radar remain separate; a personal comparison requires an actual calculation |
-| Automated checks | 179 tests, TypeScript, production build and built-Worker integration checks passed; 16 material journeys covered |
-| Independent morning | Unattended 23 October official-data publication and hourly checks verified; the zero-order daily digest arrived once at 08:03 local time |
-| Resources | Dated provider observations and qualified forecasts; shared-account usage is not inferred from this product alone |
+| Connected AI | Six separate EN/SL calculation, reading and combined scenarios; two further v91 reading checks confirmed corrected units and explanations |
+| Repeat reading | Same stored snapshot and inputs; no new order, email or commercial data request |
+| Web experience | Results below the form, shared navigation and EN/SL calculator-to-report handoff checked; full 200% zoom review deferred to the next UX sprint |
+| Automated checks | 18 targeted AI/hotel tests, TypeScript and production build passed for v91; the broader 195-test baseline passed before that bounded change |
+| Measurement | Internal ready-report journey appeared once in processed GA4 with its campaign; real advertising attribution remains unverified |
+| Public access | 22 public resources, 14 linked scripts and a recent production-log sample checked for known private markers; eight exact malformed article URLs redirect in one step |
+| Independent operations | Full 24-hour window: 24 monitor and 24 watchdog runs succeeded, official data published and the daily digest delivered once |
+
+The operations window covered unchanged service code from v89 through v90/v91. It is not a claim that the new v91 AI wording has already run for 24 hours. Editorial review, independent AI-visibility measurement and advertising readiness remain separate open items.
 
 An owner-only operations dashboard shows resources, data refreshes, report and mail states, incident transitions, delivery evidence and run history. Status colors also have text labels. The independent monitor and watchdog detect skipped or incomplete checks; unchanged incidents do not trigger repeated urgent notices. A daily 08:00 digest includes zero-order days and unresolved older incidents.
 
@@ -86,11 +99,15 @@ The monthly hotel refresh is capped at $15 with a $5 report reserve, requires a 
 
 ## Interface
 
-Current public calculator and article, **version 67, 23 October 2026**:
+Public homepage, **version 91, 30 October 2026**. This reviewed capture contains only public content and clean default inputs:
 
-![Current calculator with clean inputs and starting-rate explanation](assets/calculator-v67.png)
+![Three clear entry points and shared English navigation](assets/home-v91-public.png)
 
-![English accommodation comparison article](assets/article-v67.png)
+Current calculator result, **version 91, 30 October 2026**, using the site's labelled teaching example. All costs and fees are editable assumptions, not a host's private calculation or market averages:
+
+![Example nightly rates and booking totals in the result section below the form](assets/calculator-example-v91.png)
+
+The [version 67 calculator](assets/calculator-v67.png) and [article screenshot](assets/article-v67.png), dated 23 October 2026, remain available as historical images.
 
 The owner dashboard below uses **synthetic local test data**. Its numbers are not production balances; it contains no customer records or private provider identifiers.
 

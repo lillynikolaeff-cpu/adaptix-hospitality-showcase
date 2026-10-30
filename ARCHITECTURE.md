@@ -2,19 +2,33 @@
 
 [Product overview](README.md) · [Product decisions](PRODUCT-DECISIONS.md)
 
-**Implemented architecture at 23 October 2026 (version 67).** The public service offers a free calculator and a capped launch-report flow. The application also contains a separately gated Stripe payment path. Paid sales are disabled at this checkpoint.
+**Sprint 4 checkpoint, 30 October 2026 (production version 91).** The public service offers a free calculator and a capped launch-report flow. Paid sales remain disabled. Technical verification and open editorial acceptance are distinguished below.
+
+## AI interface added in Sprint 4
+
+The customer MCP interface at `/ai/mcp` uses OAuth with account-scoped permissions and one-hour access tokens. `calculate_price` runs deterministic shared pricing logic. `get_market_report` supports reading an entitled stored report and preparing a request that requires separate website confirmation. New AI report requests remain disabled; calculation and saved-report reading continue to work.
+
+Read contract 1.1.1 returns all available AJPES, SURS, AirROI and hotel context, source dates, units and limitations. A caller can attach unchanged calculation inputs to a read without creating another report. Hotel-room ADR describes listings for two guests with equal listing weights; a single listing is not a representative hotel market. SURS counts person-nights, and historical market revenue is not the host's profit.
+
+Private traces record action, language, contract version, call identity and snapshot identity. The six EN/SL client scenarios were verified against those traces, with repeated reads preserving the snapshot and producing no extra orders, paid requests or email. Raw responses, private identifiers and paid datasets do not belong in this showcase.
+
+The public calculator result now follows its form; the homepage provides separate entries for a report, a calculation and municipal supply. Full browser-zoom 200% acceptance is deferred to the next UX sprint. Reconnection after token expiry and preservation of unfinished inputs across language changes remain UX follow-ups.
 
 ## System map
 
 ```mermaid
 flowchart TB
-    UPDATE["Daily cloud update: 07:00 Europe/Budapest"] --> AJPES["AJPES ZIP / XML"]
+    UPDATE["Daily cloud update: 07:00 Europe/Ljubljana"] --> AJPES["AJPES ZIP / XML"]
     UPDATE --> SURS["SURS SiStat API"]
     AJPES --> PAIR["Validate and atomically prepare official-data.json"]
     SURS --> PAIR
     PAIR --> DEPLOY["Build and publish source revision through Sites"]
     DEPLOY --> APP["React / TypeScript / Vinext application on Cloudflare Workers"]
     HOST["Host: EN or SL"] --> APP
+    AI["Authenticated AI client"] --> MCP["OAuth-protected MCP interface"]
+    MCP --> CALC
+    MCP --> READ["Read entitled saved snapshot"]
+    READ --> DB
     APP --> CALC["Deterministic pricing calculation"]
     APP <--> DB[("D1: contacts, requests, grants, reports, mail and analytics")]
     APP --> MAP["Versioned geographic resolver and data-quality checks"]
@@ -144,7 +158,7 @@ The existing main task runs hourly at minute 00. It runs the watchdog, gates the
 | AJPES/SURS | Daily 07:00 local publication of the validated pair |
 | Independent monitor | Hourly minute 03; service freshness, reports, mail, resources and incidents |
 | Watchdog | Hourly minute 00; missing, stalled or incomplete monitoring |
-| Daily digest | 08:00 Europe/Budapest; previous 24 hours, including zero orders and unresolved incidents |
+| Daily digest | 08:00 Europe/Ljubljana; previous 24 hours, including zero orders and unresolved incidents |
 | Hotel cache | 20th of the month, 07:00 Europe/Ljubljana; first paid scheduled cycle on 20 November |
 | Published-offer radar | Existing weekly review and validated import |
 
@@ -152,7 +166,7 @@ Owner-only tools persist runs, incident transitions, notifications, resource sna
 
 Incident/recovery messages and the digest use connected Gmail independently of transactional EmailJS. Deduplication and atomic claims prevent routine repeats. A send with an unknown outcome requires reconciliation; acceptance by a provider is not inbox-delivery proof. The digest stores separate Sent and Inbox evidence after verification.
 
-On 23 October, the official update published version 66 autonomously, the service checks and watchdog succeeded, and the daily zero-order digest was verified at 08:03 with one attempt and one message. Version 67 then added the article pair and first short links. Full delivery identifiers remain private.
+The full observation window from 29 October 15:07:50 to 30 October 15:08:28 Europe/Ljubljana recorded 24 successful monitor runs, 24 successful watchdog runs, a published and verified official-data refresh and a verified daily digest with one sending attempt. The longest monitor/watchdog intervals were under 69 minutes, within the 90-minute threshold. No new incident transitions appeared. One older mail reservation remains unresolved and was not resent. Service code was unchanged across v89/v90/v91; this is not a 24-hour observation of the new v91 AI explanations. Full delivery identifiers remain private.
 
 Resource balances are dated observations of shared accounts. Forecasts use up to seven comparable days and identify insufficient history, resets and one-off research spending. Automatic balance retrieval from provider APIs is not yet confirmed.
 
@@ -164,6 +178,6 @@ The private application uses Node.js 22.13 or newer, pnpm, React, TypeScript, Vi
 
 The maintained deployment workflow is: retrieve the Site's source; install its locked dependencies; run the relevant unit/runtime checks, TypeScript and production build; synchronize the verified source revision; package and publish through Sites; verify the deployed result. Runtime secrets are configured through Sites and are not placed in source-control examples.
 
-At the Sprint 3 checkpoint, 179 tests, TypeScript and build passed, together with built-Worker integration checks and 16 material-attribution journeys. Provider responses and outbound email/Meta calls in those runtime tests are intercepted. These checks verify software behaviour; they do not establish campaign performance or customer adoption.
+The broader pre-v91 baseline passed 195 automated tests. The v91 change touched AI unit metadata, explanation guidance and a regression test; 18 targeted AI/hotel tests, TypeScript and production build passed. Six live EN/SL scenarios were traced, followed by two v91 saved-report reads. Earlier built-Worker and attribution checks used intercepted provider and email/Meta responses. These checks verify software behaviour; they do not establish campaign performance, customer adoption or complete editorial acceptance.
 
 This showcase is documentation-only and cannot be built or deployed as the application. A transfer of private application source, configuration and operating credentials is a separate repository handover.

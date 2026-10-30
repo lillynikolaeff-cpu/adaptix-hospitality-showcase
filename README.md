@@ -8,7 +8,7 @@ Adaptix Hospitality helps a host answer three connected questions: **What nightl
 
 The live service combines a free cost calculator with a limited launch offer of **50 free market reports**, subject to availability and supported geography. A report can be requested directly or after using the calculator. Email confirmation is required; a marketing subscription is optional.
 
-**Sprint 4 checkpoint, 30 October 2026 (production version 91).** The AI integration and technical checks below are verified; final editorial review and sprint acceptance remain open. The earlier €5 purchase design remains separately gated, with paid sales disabled.
+**Sprint 4 checkpoint, 30 October 2026 (production version 93).** The AI integration and technical checks below are verified; final editorial review and sprint acceptance remain open. The earlier €5 purchase design remains separately gated, with paid sales disabled.
 
 The homepage now offers three explicit entry points: request a market report, calculate a starting nightly rate, or view free registered-supply information for a municipality. English and Slovenian navigation consistently includes About us.
 
@@ -47,7 +47,7 @@ An authenticated Claude connection can run the same deterministic price calculat
 
 Reading an existing report reuses its snapshot and does not create another order, email or paid data request. A new report request needs a separate confirmation on the product website; new AI report requests are currently paused. The connection uses a one-hour access token and may require reconnection after expiry.
 
-AI explanations keep the host's original costs and cleaning arrangement. Source dates, units, small samples and geographical limits travel with the tool response. Historical ADR is context rather than a current guest quote or a seasonal pricing recommendation. Final editorial review remains open; successful tool execution is not proof of flawless generated wording or independent AI discovery.
+AI explanations keep the host's original costs and cleaning arrangement. Source dates, units, small samples and geographical limits travel with the tool response. Historical ADR is context rather than a current guest quote or a seasonal pricing recommendation. Versions 92–93 add localized host-facing limitations, explicit source-date blocks for both full and short answers, and guidance against ranking a cost-based rate against non-comparable historical percentiles. Source retrieval dates remain attached to the stored snapshot; rereading does not refresh them. Final editorial review remains open; successful tool execution is not proof of flawless generated wording or independent AI discovery.
 
 ## Sources and meaning
 
@@ -71,7 +71,7 @@ The introductory article remains available:
 
 The latest real-life example, [Connect your costs with the local market: a real-life example in Podčetrtek](https://adaptix-hs.eu/blog/podcetrtek-costs-local-market), is also [available in Slovenian](https://adaptix-hs.eu/sl/clanki/podcetrtek-stroski-lokalni-trg). Publication and indexing evidence do not by themselves establish search traffic or customer acquisition.
 
-Canonical and language links, a generated sitemap, article structured data and localized Open Graph cards support discovery and sharing. The report pages have public share images.
+Canonical and language links, a generated sitemap, article structured data and localized Open Graph cards support discovery and sharing. On 30 October, actual Google Search Console live tests successfully fetched the sitemap, About EN and both Podčetrtek articles. All 20 sitemap URLs returned HTTP 200, and one indexing request was submitted per tested page. The older sitemap processing error remains unresolved: a successful live fetch and an indexing request do not confirm sitemap processing or search inclusion. The report pages have public share images.
 
 Consent-aware analytics follow the path to a ready report. Sixteen registered material links distinguish organic Facebook/LinkedIn posts and Google/Meta ad variants using separate campaign values. Article assistance is preserved separately from acquisition. GA4, Search Console and owner administration provide complementary views; known owner and friend tests are excluded when interpreting actual demand.
 
@@ -86,12 +86,12 @@ The 30 October internal web test reached a ready report and appeared once in pro
 | Connected AI | Six separate EN/SL calculation, reading and combined scenarios; two further v91 reading checks confirmed corrected units and explanations |
 | Repeat reading | Same stored snapshot and inputs; no new order, email or commercial data request |
 | Web experience | Results below the form, shared navigation and EN/SL calculator-to-report handoff checked; full 200% zoom review deferred to the next UX sprint |
-| Automated checks | 18 targeted AI/hotel tests, TypeScript and production build passed for v91; the broader 195-test baseline passed before that bounded change |
+| Automated checks | 20 targeted calculation, saved-report and presentation tests, TypeScript and production build passed for v93; the broader 195-test baseline passed before that bounded change |
 | Measurement | Internal ready-report journey appeared once in processed GA4 with its campaign; real advertising attribution remains unverified |
 | Public access | 22 public resources, 14 linked scripts and a recent production-log sample checked for known private markers; eight exact malformed article URLs redirect in one step |
 | Independent operations | Full 24-hour window: 24 monitor and 24 watchdog runs succeeded, official data published and the daily digest delivered once |
 
-The operations window covered unchanged service code from v89 through v90/v91. It is not a claim that the new v91 AI wording has already run for 24 hours. Editorial review, independent AI-visibility measurement and advertising readiness remain separate open items.
+The operations window covered unchanged service code from v89 through v90/v91. It is not a claim that the latest AI wording has already run for 24 hours. Editorial review and advertising readiness remain open; independent AI discovery has not been demonstrated.
 
 An owner-only operations dashboard shows resources, data refreshes, report and mail states, incident transitions, delivery evidence and run history. Status colors also have text labels. The independent monitor and watchdog detect skipped or incomplete checks; unchanged incidents do not trigger repeated urgent notices. A daily 08:00 digest includes zero-order days and unresolved older incidents.
 

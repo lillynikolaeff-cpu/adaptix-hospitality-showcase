@@ -2,7 +2,7 @@
 
 [Product overview](README.md) · [Product decisions](PRODUCT-DECISIONS.md)
 
-**Sprint 4 checkpoint, 30 October 2026 (production version 91).** The public service offers a free calculator and a capped launch-report flow. Paid sales remain disabled. Technical verification and open editorial acceptance are distinguished below.
+**Production version 103 · 9 November 2026.** The calculator and the capped launch-report flow are public. The full report opens privately. Each property municipality maps to one report area, and every displayed price retains the geography of its source.
 
 ## AI interface added in Sprint 4
 
@@ -12,7 +12,7 @@ Read contract 1.1.1 returns all available AJPES, SURS, AirROI and hotel context,
 
 Private traces record action, language, contract version, call identity and snapshot identity. The six EN/SL client scenarios were verified against those traces, with repeated reads preserving the snapshot and producing no extra orders, paid requests or email. Raw responses, private identifiers and paid datasets do not belong in this showcase.
 
-The public calculator result now follows its form; the homepage provides separate entries for a report, a calculation and municipal supply. Full browser-zoom 200% acceptance is deferred to the next UX sprint. Reconnection after token expiry and preservation of unfinished inputs across language changes remain UX follow-ups.
+The calculator and report form share municipality search. They carry the selected municipality, accommodation type and bedroom count between steps. Unfinished inputs survive language changes and a return from an article in the same tab. The v103 territorial report was checked at 200% zoom and at 320 CSS pixels. Reconnecting Claude after its session expires remains a separate follow-up.
 
 ## System map
 
@@ -60,15 +60,15 @@ The bundle covers all 212 municipalities. Beds, accommodation units and unknown 
 
 [SiStat table 2164466S](https://pxweb.stat.si/SiStatData/pxweb/en/Data/-/2164466S.px/) provides municipal tourist arrivals and overnight stays. The importer resolves dimensions from metadata, queries the published periods and retains missing/suppressed observation flags.
 
-The latest published month may be older than the retrieval date. Comparable-period calculations require available observations and a valid denominator. Guest overnight stays describe the statistical table's population, not property occupancy in the commercial sample.
+For a report area, the annual total and its monthly breakdown use the same municipalities with observations for all 12 months. The report names the year, how many municipalities contributed and how many belong to the area. One guest staying one night counts as one overnight stay. A missing month stays missing.
 
 A failed refresh must retain the last valid published pair. The data-quality checks assess age and completeness separately from the schedule being enabled.
 
 ## Geography and AirROI
 
-A versioned catalogue retains exact AirROI market identifiers, official municipality association, boundary status and review evidence. The resolver checks the selected market and its relationship to the municipality. Broader or otherwise non-exact coverage must be labelled explicitly; the service does not silently present a different territory as an exact municipal match.
+Each of Slovenia’s 212 official municipality codes maps to exactly one of 15 report areas. Ljubljana, Piran, Bled, Kranjska Gora and Bohinj have their own areas. The other 207 municipalities form ten groups. A separate provider catalogue identifies the source locality and describes its relationship to the municipality. Group figures and locality prices keep their own geographic labels.
 
-AirROI requests run on the server with property-type and bedroom filters and a historical reference window. The adapter validates response geography, months, values and distribution ordering. Missing or inadequate coverage is reported rather than replaced with a fabricated estimate.
+The server filters historical price data by accommodation type and bedroom count, validates the locality and keeps its months separate. An unexplained 404 leaves the cause open. An explicitly empty series and a failed request have distinct messages. The rest of the territorial report remains available in each case.
 
 The price block identifies historical nightly-rate ADR, excludes separate cleaning fees and describes values before host commission. It is not a forecast or the total guest bill. Monthly distributions retain their periods; averages of monthly statistics must not be labelled an annual median.
 
@@ -93,15 +93,18 @@ sequenceDiagram
     participant Mail as EmailJS
     participant DB as D1
     participant Market as AirROI
-    Host->>App: Select area and property; optional calculation
+    Host->>App: Enter property municipality, accommodation type and bedrooms
+    App->>App: Assign report area from municipality code
     App->>DB: Save request and hashed confirmation token
     App->>Mail: Send confirmation link
     Host->>App: Confirm email, including on another device
     App->>DB: Resolve request and atomically grant launch report
     App->>DB: Claim pending fulfilment
-    App->>Market: Fetch validated, eligible market selection
-    Market-->>App: Historical estimates
-    App->>DB: Persist report, provenance and access expiry
+    opt Matching local data source
+        App->>Market: Request historical estimates if not already cached
+        Market-->>App: Return available observations or a gap
+    end
+    App->>DB: Persist report area, source geography, observations and access expiry
     App->>DB: Record report_ready once where consent allows
     App->>Mail: Send ready-report link
     App-->>Host: Open stored report
@@ -168,7 +171,7 @@ Incident/recovery messages and the digest use connected Gmail independently of t
 
 The full observation window from 29 October 15:07:50 to 30 October 15:08:28 Europe/Ljubljana recorded 24 successful monitor runs, 24 successful watchdog runs, a published and verified official-data refresh and a verified daily digest with one sending attempt. The longest monitor/watchdog intervals were under 69 minutes, within the 90-minute threshold. No new incident transitions appeared. One older mail reservation remains unresolved and was not resent. Service code was unchanged across v89/v90/v91; this is not a 24-hour observation of the new v91 AI explanations. Full delivery identifiers remain private.
 
-Resource balances are dated observations of shared accounts. Forecasts use up to seven comparable days and identify insufficient history, resets and one-off research spending. Automatic balance retrieval from provider APIs is not yet confirmed.
+The mail sender counts local attempts against the last observed shared allowance and keeps a reserve of ten messages. The age of the observation or the expected reset date alone does not stop delivery or imply replenishment. A low remaining estimate or actual delivery error prompts reconciliation.
 
 The hotel stage requires a balance observation no older than 24 hours, enforces a $15 monthly limit and $5 client-report reserve, and does not buy a completed month again. A failed refresh keeps the usable prior cache and does not block the main report. November's first paid cycle remains a future verification.
 
@@ -181,3 +184,4 @@ The maintained deployment workflow is: retrieve the Site's source; install its l
 The broader pre-v91 baseline passed 195 automated tests. The v91 change touched AI unit metadata, explanation guidance and a regression test; 18 targeted AI/hotel tests, TypeScript and production build passed. Six live EN/SL scenarios were traced, followed by two v91 saved-report reads. Earlier built-Worker and attribution checks used intercepted provider and email/Meta responses. These checks verify software behaviour; they do not establish campaign performance, customer adoption or complete editorial acceptance.
 
 This showcase is documentation-only and cannot be built or deployed as the application. A transfer of private application source, configuration and operating credentials is a separate repository handover.
+

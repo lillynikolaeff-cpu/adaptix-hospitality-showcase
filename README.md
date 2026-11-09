@@ -4,11 +4,11 @@
 
 [Product](https://adaptix-hs.eu) · [Request a report](https://adaptix-hs.eu/report) · [Slovenian report page](https://adaptix-hs.eu/sl/porocilo) · [Architecture](ARCHITECTURE.md) · [Product decisions](PRODUCT-DECISIONS.md)
 
-Adaptix Hospitality helps a host answer three connected questions: **What nightly rate covers my costs? How does my price compare with the local market? What do official data tell me about accommodation supply and tourism in my municipality?**
+Adaptix Hospitality helps independent hosts in Slovenia set a starting nightly rate, see registered accommodation in their municipality and compare their property with historical prices in nearby places.
 
-The live service combines a free cost calculator with a limited launch offer of **50 free market reports**, subject to availability and supported geography. A report can be requested directly or after using the calculator. Email confirmation is required; a marketing subscription is optional.
+The free cost calculator and limited launch offer of **50 free market reports** are available in English and Slovenian. Hosts can start a report directly or carry their property details over from the calculator. Each confirmed email can receive one launch report per municipality.
 
-**Sprint 4 checkpoint, 30 October 2026 (production version 93).** The AI integration and technical checks below are verified; final editorial review and sprint acceptance remain open. The earlier €5 purchase design remains separately gated, with paid sales disabled.
+**Production version 103 · 9 November 2026.** A host chooses the municipality where the property is located. Adaptix assigns one of 15 report areas automatically and shows which municipalities it includes. All 212 Slovenian municipalities are covered. Where local prices are missing, the report still opens and identifies the gap.
 
 The homepage now offers three explicit entry points: request a market report, calculate a starting nightly rate, or view free registered-supply information for a municipality. English and Slovenian navigation consistently includes About us.
 
@@ -22,20 +22,20 @@ An independent host renting a room, apartment or holiday home, often as a source
 
 Enter the length of the stay, cleaning and laundry costs per booking, nightly running costs, monthly fixed costs, expected occupied nights and a target profit. Editable commissions support direct bookings, Airbnb and Booking.com.
 
-The result is a starting point before promotions, discounts and date-specific adjustments. A new visit starts with clean inputs; a saved confirmation link still opens its own result. The result follows the form on all screen sizes and has no independently scrolling panel. Minimum stay and nights in this calculation are separate inputs. The result shows a rate covering entered costs and a rate with the requested income, plus booking totals and income after channel fees. A separate cleaning charge is an optional user-selected scenario; cleaning remains an expense. Taxes already included in entered costs or fees stay included and should not be added twice.
+The result is a starting point before promotions, discounts and date-specific adjustments. An unfinished calculation stays in the same browser tab when the visitor changes language or comes back from an article. A saved confirmation link opens its original result. The result follows the form on all screen sizes and has no independently scrolling panel. Minimum stay and nights in this calculation are separate inputs. The result shows a rate covering entered costs and a rate with the requested income, plus booking totals and income after channel fees. A separate cleaning charge is an optional user-selected scenario; cleaning remains an expense. Taxes already included in entered costs or fees stay included and should not be added twice.
 
 The free municipality section shows dated AJPES registered-supply information without requiring a calculation or email. Official-data coverage includes all 212 Slovenian municipalities; commercial market coverage is checked separately.
 
 ### Request a market report
 
-Choose the municipality, accommodation category and bedroom count, provide an email address and confirm it. Direct report requests do not require invented cost inputs. Requests made after a calculation carry its selected area and inputs into the report.
+Enter the property municipality, accommodation type and bedroom count, then confirm your email address. For a property in Benedikt, the form assigns **Maribor, Ptuj and Podravje**. The report names all 41 municipalities in that area. If a price comes from Maribor, its label says Maribor. The report opens with the location, area and a short summary.
 
 | Report section | What it contributes |
 | --- | --- |
-| **My price and the market** | Historical AirROI nightly-rate estimates, reference period and market coverage; a personal price overlay when a calculation was supplied |
-| **Hotel context** | Historical AirROI rates for rooms listed for two guests, plus a separate selection of published offers from the hotel radar, where covered |
-| **Registered accommodation supply** | AJPES active-establishment counts, types and registered capacity |
-| **Tourism context** | SURS municipal guest-night history, seasonality and available comparable periods |
+| **Nightly prices and booked nights** | Historical local prices in whole euros, month, type of accommodation and sample size. Occupancy is the estimated share of calendar nights booked for comparable listings. |
+| **Hotel rooms** | Historical median per room per night for two guests, the month and number of room listings. A missing price is labelled in the row. |
+| **Registered accommodation** | Dated AJPES counts for the property municipality and its report area. |
+| **Guest overnight stays** | SURS totals for municipalities with all 12 months of data, the number included and the exact total. Two guests staying three nights count as six overnight stays. |
 
 One launch grant is tied to a verified email and municipality. Reopening an existing report reuses its stored snapshot; it does not fetch another commercial dataset. Access expires after 30 days. Provider failures and uncertain outcomes remain visible for review rather than triggering an uncontrolled repeat request.
 
@@ -79,7 +79,11 @@ Fixed first-party short links now support LinkedIn to EN and Facebook to SL. The
 
 The 30 October internal web test reached a ready report and appeared once in processed GA4 with its campaign label. Reopening did not create another order or report-ready event. Production report_ready is imported into Google Ads as a secondary conversion, while diagnostic events remain separate. This test had no advertising click or advertising consent and does not prove real advertising attribution. No Sprint 4 campaign has been launched.
 
-## Implementation and reliability checkpoint
+## Release checks
+
+For v103, the production build, TypeScript checks and 207 automated tests passed. Three saved examples were read in both languages at 320, 390 and 1120 CSS pixels and at 200% browser zoom. After release, the public calculator-to-report path, links to both language forms, sitemap and anonymous denial of private report content were checked. Confirmation and ready emails were exercised with a simulated mail provider. Real inbox delivery for this release is pending.
+
+### Earlier Sprint 4 checks
 
 | Area | Evidence at the 30 October Sprint 4 checkpoint |
 | --- | --- |
@@ -99,11 +103,15 @@ The monthly hotel refresh is capped at $15 with a $5 report reserve, requires a 
 
 ## Interface
 
+The public report form in **v103 (9 November 2026)** shows the selected property and the wider area before asking for email.
+
+![Public report form for Benedikt showing its assigned report area and 41 municipalities](assets/report-area-v103.png)
+
 Public homepage, **version 91, 30 October 2026**. This reviewed capture contains only public content and clean default inputs:
 
 ![Three clear entry points and shared English navigation](assets/home-v91-public.png)
 
-Current calculator result, **version 91, 30 October 2026**, using the site's labelled teaching example. All costs and fees are editable assumptions, not a host's private calculation or market averages:
+Archived calculator result, **version 91, 30 October 2026**, using the site's labelled teaching example. All costs and fees are editable assumptions, not a host's private calculation or market averages:
 
 ![Example nightly rates and booking totals in the result section below the form](assets/calculator-example-v91.png)
 
@@ -122,3 +130,4 @@ Product design and development by **Lilly Dubovik / Adaptix**, using ChatGPT and
 The application uses React, TypeScript, Vinext and Vite on Cloudflare Workers through OpenAI Sites, with Cloudflare D1 and Drizzle for application state. See [Architecture](ARCHITECTURE.md) for the actual storage and execution boundaries.
 
 This public repository contains product documentation and approved public interface images. Application source, customer records, credentials, private report links and raw supplier datasets remain private. No open-source licence is granted by this documentation update.
+

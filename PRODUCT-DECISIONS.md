@@ -2,11 +2,11 @@
 
 [Product overview](README.md) · [Architecture](ARCHITECTURE.md)
 
-These decisions reflect the **30 October 2026 Sprint 4 checkpoint**: a free calculator, limited launch reports, bilingual content, consent-aware measurement and a connected AI interface. Final editorial review and sprint acceptance remain open.
+**Production version 103 · 9 November 2026.** The current web report covers all 212 Slovenian municipalities through 15 report areas. The host selects the location of their property, and the report explains the geography and period behind each figure.
 
 ## Give visitors three explicit starting points
 
-A visitor can request a report, calculate a cost-based nightly rate, or inspect free municipal supply without completing the other paths. The calculator result follows the inputs instead of competing with them in a side panel. This bounded UX change ships in Sprint 4; the broader redesign and full 200% zoom matrix move to the next UX sprint.
+The homepage offers a market report, a cost-based starting rate and free registered-supply information. A host can move from the calculator to the report with property details already filled in, switch languages or read an article and return to the unfinished form.
 
 ## Let AI explain a verified result without changing the host's inputs
 
@@ -24,7 +24,7 @@ A market average cannot tell a host whether a short stay covers cleaning, laundr
 
 A separate cleaning fee is guest revenue while cleaning remains an expense. Keeping both visible supports comparison of short and long stays without hiding costs. Numerical results use deterministic formulas.
 
-The public wording is “Your starting rates”: the output precedes promotions, discounts and date-specific decisions. Fresh visits start a new calculation; email links retain access to their own stored result.
+The public wording is “Your starting rates”: the output precedes promotions, discounts and date-specific decisions. The unfinished calculation is kept in the same browser tab. A saved result opens through its own private link.
 
 ## Keep small samples useful
 
@@ -52,15 +52,15 @@ AJPES describes registered establishments, SURS supplies municipal tourism obser
 
 Source dates, retrieval dates and definitions travel with the report. Missing or suppressed values remain visible. A daily source check cannot make the latest published monthly tourism data more recent.
 
-## Make geography explicit
+## Assign the area from the property municipality
 
-The visitor chooses an official municipality and a compatible commercial market. The resolver rejects unrelated or unconfirmed combinations. A supported locality relationship does not establish identical administrative boundaries; that uncertainty is stated in the report.
+A host in Benedikt already knows where the property is. The form assigns Maribor, Ptuj and Podravje and shows its 41 municipalities. One report area can include several distinct rental markets, so each price is labelled with its actual locality and month.
 
-Free official-data coverage across 212 municipalities does not imply equivalent commercial coverage. The system retains exact provider identifiers and the version of the geographic rule used.
+The same mapping covers all 212 municipalities. A place with few price observations still gets the full report. SURS totals state how many municipalities had all 12 months of data. Rental and hotel observations keep their own units and sample sizes.
 
 ## Preserve the report independently of email
 
-Entitlement, report readiness and email delivery are separate states. The customer can open a ready report when its email fails. Sending the same result link again does not refetch the market data.
+Entitlement, report readiness and mail delivery are recorded separately. A ready report uses the same snapshot and expiry when its owner opens it in another language or returns later. An unexplained provider response leaves a gap in the relevant section.
 
 Atomic claims prevent normal duplicate processing. An uncertain supplier-call or mail outcome requires review instead of a blind retry. This is a controlled recovery strategy, not a promise of exactly-once behaviour across external services.
 
@@ -103,3 +103,4 @@ The first short URLs are fixed aliases to one language and one registered campai
 This repository describes the deployed service and separates disabled paths, verified behaviour and pending commercial decisions. Archived screenshots are dated rather than presented as the current interface.
 
 Application source, customer data, credentials and private operational evidence remain outside the public showcase. Documentation changes do not grant a new software licence or claim customer adoption.
+
